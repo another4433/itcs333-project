@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `booking` (
   `Description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`PersonID`,`RoomID`),
   KEY `RoomID` (`RoomID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `favourite` (
   `PersonID` int NOT NULL,
   PRIMARY KEY (`RoomID`,`PersonID`),
   KEY `PersonID` (`PersonID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -64,14 +64,14 @@ DROP TABLE IF EXISTS `person`;
 CREATE TABLE IF NOT EXISTS `person` (
   `PersonID` int NOT NULL AUTO_INCREMENT,
   `FirstName` varchar(50) NOT NULL,
-  `LastName` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `LastName` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `Email` varchar(80) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `hasAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `ImageName` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`PersonID`),
   UNIQUE KEY `Email` (`Email`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `person`
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `room` (
   `ImageName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`RoomID`),
   UNIQUE KEY `RoomName` (`RoomName`)
-) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `room`
