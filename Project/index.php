@@ -60,7 +60,6 @@
                         $sql.=" AND (R.HasPCs>0 or R.HasProjectors>0)";
                     }
                     if(isset($_GET['favorites'])){
-                        $personID=1;
                         $sql.=" AND R.RoomID in (SELECT RoomID from favourite where PersonID= :personID)";
                         $params[':personID']=$personID;
                     }
