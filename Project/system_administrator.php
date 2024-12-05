@@ -85,21 +85,25 @@
         <meta name="Possible Page Themes" content="dark white">
         <meta name="Scaling Compatibility" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
-        <link rel="stylesheet" href="Style_profile.css">
+        <link rel="stylesheet" href="Style_admin.css">
     </head>
 </html>
 <body>
     <?php
+        $error = "";
         try {
             $pdo = new PDO("mysql:host=localhost;dbname=bookingdb;charset=utf8mb4;port=3306", "root", "");
         } 
         catch(PDOException $pDOException){
             echo "There's an error in the database connection.";
-            print_r("Error message: ");
-            print_r($pDOException->getMessage());
+            $error = "Error message: ".$pDOException->getMessage();
             die();
         }
     ?>
+    <?php if ($error !== ""): ?>
+    <h1 class="error"><?= $error; ?></h1>
+    <?php $error = ""; ?>
+    <?php endif; ?>
     <header>Room Booking System Administrator Dashboard</header><br>
     <div class="pico">
         <form action="system.administrator.php" method="get">
@@ -174,57 +178,28 @@
     </table><br>
     <?php
                 elseif ($view_selector == "Bookings"):
-                    $rows = $pdo->query("SELECT * FROM `person` P, `room` R, `booking` B");
+                    $rows = $pdo->query("SELECT R.`RoomID`, R.`RoomName`, B.`StartDate`, B.`StartTime`, B.`EndDate`, B.`EndTime` 
+                    FROM `person` P, `room` R, `booking` B WHERE P.`PersonID` = B.`PersonID` AND R.`RoomID` = B.`RoomID`");
     ?>
     <table border="3px" class="container">
         <tr>
-            <th>Person ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>HasAdmin</th>
-            <th>Person Image File Name</th>
             <th>Room ID</th>
             <th>Room Name</th>
-            <th>Location</th>
-            <th>Capacity</th>
-            <th>HasPCs</th>
-            <th>HasProjectors</th>
-            <th>Room Image File Name</th>
-            <th>Booking Person ID</th>
-            <th>Booking Room ID</th>
-            <th>Start Time</th>
-            <th>End Time</th>
             <th>Start Date</th>
+            <th>Start Time</th>
             <th>End Date</th>
-            <th>Booking Description</th>
+            <th>End Time</th>
         </tr>
         <tr>
             <?php
                 foreach($rows as $row):
             ?>
-            <td><?= $row["P.`PersonID`"];?></td>
-            <td><?= $row["P.`FirstName`"];?></td>
-            <td><?= $row["P.`LastName`"];?></td>
-            <td><?= $row["P.`Email`"];?></td>
-            <td><?= $row["P.`Password`"];?></td>
-            <td><?= $row["P.`hasAdmin`"];?></td>
-            <td><?= $row["P.`ImageName`"];?></td>
             <td><?= $row["R.`RoomID`"];?></td>
             <td><?= $row["R.`RoomName`"];?></td>
-            <td><?= $row["R.`Location`"];?></td>
-            <td><?= $row["R.`Capacity`"];?></td>
-            <td><?= $row["R.`HasPCs`"];?></td>
-            <td><?= $row["R.`HasProjectors`"];?></td>
-            <td><?= $row["R.`ImageName`"];?></td>
-            <td><?= $row["B.`PersonID`"];?></td>
-            <td><?= $row["B.`RoomID`"];?></td>
-            <td><?= $row["B.`StartTime`"];?></td>
-            <td><?= $row["B.`EndTime`"];?></td>
             <td><?= $row["B.`StartDate`"];?></td>
+            <td><?= $row["B.`StartTime`"];?></td>
             <td><?= $row["B.`EndDate`"];?></td>
-            <td><?= $row["B.`Description`"];?></td>
+            <td><?= $row["B.`EndTime`"];?></td>
             <?php
                 endforeach;
             ?>
@@ -235,12 +210,18 @@
             endif;
         }
         catch(PDOException $pDOException){
+            $error = "Error message: ".$pDOException->getMessage();
             die("There's a problem with the database.");
         } 
         catch(Exception $e){
+            $error = "Error message: ".$e->getMessage();
             die("Error details: ".$e->getMessage());
         }
     ?>
+    <?php if ($error !== ""): ?>
+    <h1 class="error"><?= $error; ?></h1>
+    <?php $error = ""; ?>
+    <?php endif; ?>
     <div class="pico">
         <form action="system_administrator.php" method="post">
             <label for="actions">Choose your action: </label><br>
@@ -393,7 +374,6 @@
                         $concat = rtrim($concat, ',');
                         $temporary = $pdo->prepare("UPDATE `room` SET $concat WHERE `RoomID` = :roomID");
                         $temporary->bindParam(":roomID", $_POST["oldID"]);
-                        $data['RoomID'] = $change_room->getRoomId();
                         $temporary->execute($data);
                         echo "Record updated successfully!";
                     endif;
@@ -401,13 +381,17 @@
             endif;
         }
         catch(PDOException $pDOException){
+            $error = "Error details: ".$pDOException->getMessage();
             die("There's a problem with the database.");
         }
         catch(Exception $exception){
             echo "There's an error in the website.";
-            print_r("Error details: ");
-            print_r($exception->getMessage());
+            $error = "Error details: ".$exception->getMessage();
             die();
         }
     ?>
+    <?php if ($error !== ""): ?>
+    <h1 class="error"><?= $error; ?></h1>
+    <?php $error = ""; ?>
+    <?php endif; ?>
 </body>
