@@ -76,6 +76,11 @@
             return $this->image;
         }
     }
+    function Bin($onOrOff){
+        if (isset($onOrOff))
+            return 1;
+        return 0;
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -329,7 +334,7 @@
                         endif;
                     endif;
                 elseif ($action_selection == "Delete Person"):
-    ?>
+?>
     <div class="pico">
         <form action="system_administrator.php" method="get">
             <label for="looking">Enter the id to look for person: </label>
@@ -348,7 +353,7 @@
                     $statement = $pdo->prepare("INSERT INTO `room`(`RoomID`, `RoomName`, `Location`, `Capacity`, `HasPCs`, `HasProjectors`, `ImageName`) VALUES (?, ?, ?, ?, ?, ?, ?)");
     ?>
     <div class="pico">
-        <form action="system_administrator.php" method="post">
+        <form action="system_administrator.php" method="post" enctype="multipart/form-data">
             <label for="roomID">Enter the id of the room: </label>
             <input name="roomID" id="pRoomID" type="number" placeholder="Identification number of the room"><br>
             <label for="roomName">Enter the name of the room: </label>
@@ -361,12 +366,15 @@
             <input name="hasPCs" id="PC" type="number" placeholder="Room contains PC?"><br>
             <label for="hasProjectors">Enter '1' if it contains Projector otherwise '0': </label>
             <input name="hasProjectors" id="Projector" type="number" placeholder="Room contains Projector?"><br>
+            <label for="ImageName">Upload room image here: </label>
+            <input type="file" name="ImageName" accept="image/*" placeholder="File path for image file"><br>
             <input name="submit" id="pRoomSubmit" type="submit" value="Submit"><br><br>
         </form>
     </div>
     <?php
-                    if (isset($_POST["submit"]) && isset($_POST["roomID"]) && $_POST["submit"] == "Submit"):
-                        $roomDetails = new Room($_POST["roomID"], $_POST["location"], $_POST["capacity"], $_POST["roomName"], $_POST["hasPCs"], $_POST["hasProjectors"], $image);
+                    if (isset($_POST["submit"]) && isset($_POST["roomID"]) && isset($_FILES["ImageName"]) && $_POST["submit"] == "Submit"):
+                        $fileName = basename($_FILES["ImageName"]);
+                        $roomDetails = new Room($_POST["roomID"], $_POST["location"], $_POST["capacity"], $_POST["roomName"], $_POST["hasPCs"], $_POST["hasProjectors"], $fileName);
                         $statement->execute([
                             'RoomID' => $roomDetails->getRoomId(),
                             'RoomName' => $roomDetails->getRoomName(),
@@ -377,6 +385,36 @@
                             'ImageName' => $roomDetails->getImage()
                         ]);
                         echo "New record inserted with ID: " . $pdo->lastInsertId()."<br>";
+                        $pattern = "{(\w+).(\w+)}";
+                        if (preg_match($pattern, $fileName)){
+                            print_r("Database have been interacted without any problem.");
+                        }
+                        else {
+                            print_r("There might be a problem in the database.");
+                        }
+                    endif;
+                    if ($_SERVER['REQUEST_METHOD'] == "POST"):
+                        if (!isset($_FILES['ImageName']) || $_FILES['ImageName']['error'] == UPLOAD_ERR_NO_FILE)
+                            exit('No file was Uploaded');
+                        $image = $_FILES['ImageName'];
+                        $imageName = basename($image['name']);
+                        $fileExt = "." . pathinfo($imageName, PATHINFO_EXTENSION);
+                        $targetDir = 'Images/';
+                        $imageName = "";
+                         do {
+                            $uniqueName = uniqid();
+                            $targetFile = $targetDir . $uniqueName . $fileExt;
+                        } while (file_exists($targetFile));
+                        if (move_uploaded_file($image['tmp_name'], $targetFile)):
+?>
+<script>window.alert("File uploaded successfully");</script>
+<?php
+                        else:
+?>
+<script>window.alert("An error occured when uploading file.");</script>
+<?php
+                            die();
+                        endif;
                     endif;
                 elseif ($action_selection == "Delete Room"):
     ?>
@@ -397,7 +435,7 @@
                 elseif ($action_selection == "Edit Room"):
     ?>
     <div class="pico">
-        <form action="system_administrator.php" method="post">
+        <form action="system_administrator.php" method="post" enctype="multipart/form-data">
             <label for="oldID">Enter the id of the current room: </label>
             <input name="oldID" id="pOldID" type="number" placeholder="Identification number of the old room"><br>
             <label for="newroomName">Enter the name of the room: </label>
@@ -410,12 +448,15 @@
             <input name="newhasPCs" id="newPC" type="number" placeholder="New Room contains PC?"><br>
             <label for="newhasProjectors">Enter '1' if it contains Projector otherwise '0': </label>
             <input name="newhasProjectors" id="newProjector" type="number" placeholder="New Room contains Projector?"><br>
+            <label for="editFile">Upload the new image file here: </label>
+            <input type="file" name="editFile" accept="image/*" placeholder="File path for new image"><br>
             <input name="newsubmit" id="pNewRoomSubmit" type="submit" value="Submit"><br><br>
         </form>
     </div>
     <?php
                     if (isset($_POST["newSubmit"]) && isset($_POST["oldID"]) && $_POST["newSubmit"] == "Submit"):
-                        $change_room = new Room($_POST["oldID"], $_POST["newlocation"], $_POST["newcapacity"], $_POST["newroomName"], $_POST["newhasPCs"], $_POST["newhasProjectors"], $image);
+                        $newFile = basename($_FILES["editFile"]);
+                        $change_room = new Room($_POST["oldID"], $_POST["newlocation"], $_POST["newcapacity"], $_POST["newroomName"], $_POST["newhasPCs"], $_POST["newhasProjectors"], $newFile);
                         $data = [
                             'RoomName' => $change_room->getRoomName(),
                             'Location' => $change_room->getLocation(),
@@ -432,7 +473,36 @@
                         $temporary = $pdo->prepare("UPDATE `room` SET $concat WHERE `RoomID` = :roomID");
                         $temporary->bindParam(":roomID", $_POST["oldID"]);
                         $temporary->execute($data);
-                        echo "Record updated successfully!";
+                        $pattern = "{(\w+).(\w+)}";
+                        if (preg_match($pattern, $editFile)){
+                            print_r("Database have been interacted without any problem.");
+                        }
+                        else {
+                            print_r("There might be a problem in the database.");
+                        }
+                    endif;
+                    if ($_SERVER['REQUEST_METHOD'] == "POST"):
+                        if (!isset($_FILES['ImageName']) || $_FILES['ImageName']['error'] == UPLOAD_ERR_NO_FILE)
+                            exit('No file was Uploaded');
+                        $image = $_FILES['ImageName'];
+                        $imageName = basename($image['name']);
+                        $fileExt = "." . pathinfo($imageName, PATHINFO_EXTENSION);
+                        $targetDir = 'Images/';
+                        $imageName = "";
+                         do {
+                            $uniqueName = uniqid();
+                            $targetFile = $targetDir . $uniqueName . $fileExt;
+                        } while (file_exists($targetFile));
+                        if (move_uploaded_file($image['tmp_name'], $targetFile)):
+?>
+<script>window.alert("File uploaded successfully");</script>
+<?php
+                        else:
+?>
+<script>window.alert("An error occured when uploading file.");</script>
+<?php
+                            die();
+                        endif;
                     endif;
                 endif;
             endif;
@@ -441,8 +511,11 @@
             $error = "Error details: ".$pDOException->getMessage();
             die("There's a problem with the database.");
         }
+        catch(TypeError $typeError){
+            $error = "Error details: ".$typeError->getMessage();
+            die("Mismatch data type from input.");
+        }
         catch(Exception $exception){
-            echo "There's an error in the website.";
             $error = "Error details: ".$exception->getMessage();
             die();
         }
