@@ -79,6 +79,50 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+    <script>
+        window.console.info("The \"user\" and \"room\" classes have been created to simplify adding records to the database.");
+        window.console.time();
+        function userCreated(){
+            window.alert("Thank you for creating a record to \"user\" table in the database.");
+            window.console.info("A record have been added to \"user\" table in the database.");
+            window.console.time();
+        }
+        function userDeleted(){
+            window.alert("Thank you for deleting a record from \"user\" table in the database.");
+            window.console.info("A record have been deleted from \"user\" table in the database.");
+            window.console.time();
+        }
+        function roomCreated(){
+            window.alert("Thank you for creating a record to \"room\" table in the database.");
+            window.console.info("A record have been added to \"room\" table in the database.");
+            window.console.time();
+        }
+        function roomDeleted(){
+            window.alert("Thank you for deleting a record from \"room\" table in the database.");
+            window.console.info("A record have been deleted from \"room\" table in the database.");
+            window.console.time();
+        }
+        function roomModified(){
+            window.alert("Thank you for modifiying a record in \"room\" table in the database.");
+            window.console.info("A record have been modified from \"room\" table in the database.");
+            window.console.time();
+        }
+        function userDisplayed(){
+            window.alert("The record of \"user\" table from the database have been displayed.");
+            window.console.warn("New record have been added to \"user\" table in the database.");
+            window.console.time();
+        }
+        function roomDisplayed(){
+            window.alert("The record of \"room\" table from the database have been displayed.");
+            window.console.warn("New record have been added to \"room\" table in the database.");
+            window.console.time();
+        }
+        function bookingDisplayed(){
+            window.alert("The record of \"booking\" table from the database have been displayed.");
+            window.console.warn("New record have been added to \"booking\" table in the database.");
+            window.console.time();
+        }
+    </script>
     <head>
         <title>Administrator Dashboard</title>
         <meta name="Data Encoder" charset="utf-8">
@@ -95,12 +139,16 @@
             $pdo = new PDO("mysql:host=localhost;dbname=bookingdb;charset=utf8mb4;port=3306", "root", "");
         } 
         catch(PDOException $pDOException){
-            echo "There's an error in the database connection.";
             $error = "Error message: ".$pDOException->getMessage();
             die();
         }
     ?>
     <?php if ($error !== ""): ?>
+    <script>
+        window.alert("There's an error in the database connection.");
+        window.console.error("There's an error in the database connection.");
+        window.console.time();
+    </script>
     <h1 class="error"><?= $error; ?></h1>
     <?php $error = ""; ?>
     <?php endif; ?>
@@ -108,9 +156,9 @@
     <div class="pico">
         <form action="system.administrator.php" method="get">
             <label for="views">Choose one of the following views: </label><br>
-            <input name="views" id="pView1" type="radio" value="Users"><p>Users</p><br>
-            <input name="views" id="pView2" type="radio" value="Rooms" default><p>Rooms</p><br>
-            <input name="views" id="pView3" type="radio" value="Bookings"><p>Bookings</p><br>
+            <input name="views" id="pView1" type="radio" value="Users" onclick="userDisplayed()"><p>Users</p><br>
+            <input name="views" id="pView2" type="radio" value="Rooms" onclick="roomDisplayed()"><p>Rooms</p><br>
+            <input name="views" id="pView3" type="radio" value="Bookings" onclick="bookingDisplayed()" default><p>Bookings</p><br>
         </form><br>
     </div>
     <?php
@@ -178,11 +226,13 @@
     </table><br>
     <?php
                 elseif ($view_selector == "Bookings"):
-                    $rows = $pdo->query("SELECT R.`RoomID`, R.`RoomName`, B.`StartDate`, B.`StartTime`, B.`EndDate`, B.`EndTime` 
+                    $rows = $pdo->query("SELECT P.`PersonID, `R.`RoomID`, R.`RoomName`, B.`StartDate`, B.`StartTime`, B.`EndDate`, B.`EndTime`
                     FROM `person` P, `room` R, `booking` B WHERE P.`PersonID` = B.`PersonID` AND R.`RoomID` = B.`RoomID`");
     ?>
     <table border="3px" class="container">
         <tr>
+            <th>Person ID</th>
+            <th>Person Email</th>
             <th>Room ID</th>
             <th>Room Name</th>
             <th>Start Date</th>
@@ -194,6 +244,7 @@
             <?php
                 foreach($rows as $row):
             ?>
+            <td><?= $row["P.`PersonID`"]; ?></td>
             <td><?= $row["R.`RoomID`"];?></td>
             <td><?= $row["R.`RoomName`"];?></td>
             <td><?= $row["B.`StartDate`"];?></td>
@@ -214,22 +265,28 @@
             die("There's a problem with the database.");
         } 
         catch(Exception $e){
-            $error = "Error message: ".$e->getMessage();
-            die("Error details: ".$e->getMessage());
+            $error = "Error details: ".$e->getMessage();
+            die();
         }
     ?>
     <?php if ($error !== ""): ?>
+    <script>
+        window.alert("An error occured in the website.");
+        window.console.error("There's an error in the website.");
+        window.console.info("The error could be database connection or general error.");
+        window.console.time();
+    </script>
     <h1 class="error"><?= $error; ?></h1>
     <?php $error = ""; ?>
     <?php endif; ?>
     <div class="pico">
         <form action="system_administrator.php" method="post">
             <label for="actions">Choose your action: </label><br>
-            <input name="actions" id="pAction1" type="radio" value="Add Person"><p>Add Person</p><br>
-            <input name="actions" id="pAction2" type="radio" value="Delete Person"><p>Delete Person</p><br>
-            <input name="actions" id="pAction3" type="radio" value="Add Room"><p>Add Room</p><br>
-            <input name="actions" id="pAction4" type="radio" value="Edit Room"><p>Edit Room</p><br>
-            <input name="actions" id="pAction5" type="radio" value="Delete Room"><p>Delete Room</p><br>
+            <input name="actions" id="pAction1" type="radio" value="Add Person" onclick="userCreated()"><p>Add Person</p><br>
+            <input name="actions" id="pAction2" type="radio" value="Delete Person" onclick="userDeleted()"><p>Delete Person</p><br>
+            <input name="actions" id="pAction3" type="radio" value="Add Room" onclick="roomCreated()"><p>Add Room</p><br>
+            <input name="actions" id="pAction4" type="radio" value="Edit Room" onclick="roomModified()"><p>Edit Room</p><br>
+            <input name="actions" id="pAction5" type="radio" value="Delete Room" onclick="roomDeleted()"><p>Delete Room</p><br>
             <input name="actions" id="pAction6" type="radio" value="Cancel Action" default><p>Cancel Action</p><br>
         </form><br>
     </div>
@@ -391,6 +448,12 @@
         }
     ?>
     <?php if ($error !== ""): ?>
+        <script>
+        window.alert("An error occured in the website.");
+        window.console.error("There's an error in the website.");
+        window.console.info("The error could be database connection or general error.");
+        window.console.time();
+    </script>
     <h1 class="error"><?= $error; ?></h1>
     <?php $error = ""; ?>
     <?php endif; ?>
