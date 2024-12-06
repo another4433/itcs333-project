@@ -85,46 +85,50 @@
 <!DOCTYPE html>
 <html lang="en">
     <script>
-        window.console.info("The \"user\" and \"room\" classes have been created to simplify adding records to the database.");
+        window.console.log("The \"user\" and \"room\" classes have been created to simplify adding records to the database.");
         window.console.time();
         function userCreated(){
             window.alert("Thank you for creating a record to \"user\" table in the database.");
-            window.console.info("A record have been added to \"user\" table in the database.");
+            window.console.warn("A record have been added to \"user\" table in the database.");
             window.console.time();
         }
         function userDeleted(){
             window.alert("Thank you for deleting a record from \"user\" table in the database.");
-            window.console.info("A record have been deleted from \"user\" table in the database.");
+            window.console.warn("A record have been deleted from \"user\" table in the database.");
             window.console.time();
         }
         function roomCreated(){
             window.alert("Thank you for creating a record to \"room\" table in the database.");
-            window.console.info("A record have been added to \"room\" table in the database.");
+            window.console.warn("A record have been added to \"room\" table in the database.");
             window.console.time();
         }
         function roomDeleted(){
             window.alert("Thank you for deleting a record from \"room\" table in the database.");
-            window.console.info("A record have been deleted from \"room\" table in the database.");
+            window.console.warn("A record have been deleted from \"room\" table in the database.");
             window.console.time();
         }
         function roomModified(){
             window.alert("Thank you for modifiying a record in \"room\" table in the database.");
-            window.console.info("A record have been modified from \"room\" table in the database.");
+            window.console.warn("A record have been modified from \"room\" table in the database.");
             window.console.time();
         }
         function userDisplayed(){
             window.alert("The record of \"user\" table from the database have been displayed.");
-            window.console.warn("New record have been added to \"user\" table in the database.");
+            window.console.log("Records for \"user\" table have been displayed.");
             window.console.time();
         }
         function roomDisplayed(){
             window.alert("The record of \"room\" table from the database have been displayed.");
-            window.console.warn("New record have been added to \"room\" table in the database.");
+            window.console.log("Records for \"room\" table have been displayed.");
             window.console.time();
         }
         function bookingDisplayed(){
             window.alert("The record of \"booking\" table from the database have been displayed.");
-            window.console.warn("New record have been added to \"booking\" table in the database.");
+            window.console.log("Records for \"room\" table have been displayed.");
+            window.console.time();
+        }
+        function selectedChoice(){
+            window.confirm.console.log("Nothing happened");
             window.console.time();
         }
     </script>
@@ -287,12 +291,12 @@
     <div class="pico">
         <form action="system_administrator.php" method="post">
             <label for="actions">Choose your action: </label><br>
-            <input name="actions" id="pAction1" type="radio" value="Add Person" onclick="userCreated()"><p>Add Person</p><br>
-            <input name="actions" id="pAction2" type="radio" value="Delete Person" onclick="userDeleted()"><p>Delete Person</p><br>
-            <input name="actions" id="pAction3" type="radio" value="Add Room" onclick="roomCreated()"><p>Add Room</p><br>
-            <input name="actions" id="pAction4" type="radio" value="Edit Room" onclick="roomModified()"><p>Edit Room</p><br>
-            <input name="actions" id="pAction5" type="radio" value="Delete Room" onclick="roomDeleted()"><p>Delete Room</p><br>
-            <input name="actions" id="pAction6" type="radio" value="Cancel Action" default><p>Cancel Action</p><br>
+            <input name="actions" id="pAction1" type="radio" value="Add Person"><p>Add Person</p><br>
+            <input name="actions" id="pAction2" type="radio" value="Delete Person"><p>Delete Person</p><br>
+            <input name="actions" id="pAction3" type="radio" value="Add Room"><p>Add Room</p><br>
+            <input name="actions" id="pAction4" type="radio" value="Edit Room"><p>Edit Room</p><br>
+            <input name="actions" id="pAction5" type="radio" value="Delete Room"><p>Delete Room</p><br>
+            <input name="actions" id="pAction6" type="radio" value="Cancel Action" onclick="selectedChoice()" default><p>Cancel Action</p><br>
         </form><br>
     </div>
     <?php
@@ -331,10 +335,13 @@
                                 'ImageName' => $person->getImage()
                             ]);
                             echo "New record inserted with ID: " . $pdo->lastInsertId()."<br>";
+    ?>
+    <script>userCreated();</script>
+    <?php
                         endif;
                     endif;
                 elseif ($action_selection == "Delete Person"):
-?>
+    ?>
     <div class="pico">
         <form action="system_administrator.php" method="get">
             <label for="looking">Enter the id to look for person: </label>
@@ -348,6 +355,9 @@
                         $stmt->bindParam(':personID', $_GET["looking"]);
                         $stmt->execute();
                         echo "Record have been deleted."."<br>";
+    ?>
+    <script>userDeleted();</script>
+    <?php
                     endif;
                 elseif ($action_selection == "Add Room"):
                     $statement = $pdo->prepare("INSERT INTO `room`(`RoomID`, `RoomName`, `Location`, `Capacity`, `HasPCs`, `HasProjectors`, `ImageName`) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -406,16 +416,19 @@
                             $targetFile = $targetDir . $uniqueName . $fileExt;
                         } while (file_exists($targetFile));
                         if (move_uploaded_file($image['tmp_name'], $targetFile)):
-?>
-<script>window.alert("File uploaded successfully");</script>
-<?php
+    ?>
+    <script>window.alert("File uploaded successfully");</script>
+    <?php
                         else:
-?>
-<script>window.alert("An error occured when uploading file.");</script>
-<?php
+    ?>
+    <script>window.alert("An error occured when uploading file.");</script>
+    <?php
                             die();
                         endif;
                     endif;
+    ?>
+    <script>roomCreated();</script>
+    <?php
                 elseif ($action_selection == "Delete Room"):
     ?>
     <div class="pico">
@@ -432,6 +445,9 @@
                         $action->execute();
                         echo "Record have been deleted."."<br>";
                     endif;
+    ?>
+    <script>roomDeleted();</script>
+    <?php
                 elseif ($action_selection == "Edit Room"):
     ?>
     <div class="pico">
@@ -494,16 +510,19 @@
                             $targetFile = $targetDir . $uniqueName . $fileExt;
                         } while (file_exists($targetFile));
                         if (move_uploaded_file($image['tmp_name'], $targetFile)):
-?>
-<script>window.alert("File uploaded successfully");</script>
-<?php
+    ?>
+    <script>window.alert("File uploaded successfully");</script>
+    <?php
                         else:
-?>
-<script>window.alert("An error occured when uploading file.");</script>
-<?php
+    ?>
+    <script>window.alert("An error occured when uploading file.");</script>
+    <?php
                             die();
                         endif;
                     endif;
+    ?>
+    <script>roomModified();</script>
+    <?php
                 endif;
             endif;
         }
@@ -521,7 +540,7 @@
         }
     ?>
     <?php if ($error !== ""): ?>
-        <script>
+    <script>
         window.alert("An error occured in the website.");
         window.console.error("There's an error in the website.");
         window.console.info("The error could be database connection or general error.");
