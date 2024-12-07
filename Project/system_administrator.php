@@ -85,6 +85,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <script>
+        let isExecuted = true;
         window.console.log("The \"user\" and \"room\" classes have been created to simplify adding records to the database.");
         function userCreated(){
             window.alert("Thank you for creating a record to \"user\" table in the database.");
@@ -352,10 +353,25 @@
                             ]);
                             echo "New record inserted with ID: " . $pdo->lastInsertId()."<br>";
     ?>
-    <script defer>userCreated();</script>
+    <script defer="true">
+        userCreated();
+        isExecuted = true;
+    </script>
     <?php
                         endif;
                     endif;
+    ?>
+    <script defer="true">
+        if (isExecuted){
+            window.console.log("Success! A record have been added to person table in the database.")
+            isExecuted = false;
+        }
+        else {
+            window.alert("Failed to add a record to person table in the database.")
+            window.console.warn("A record have not been added to person table in the database.")
+        }
+    </script>
+    <?php
                 elseif ($action_selection == "Delete Person"):
     ?>
     <div class="container" id="deletePerson">
@@ -371,9 +387,24 @@
                         $stmt->bindParam(':personID', $_GET["looking"]);
                         $stmt->execute();
     ?>
-    <script defer>userDeleted();</script>
+    <script defer>
+        isExecuted = true;
+        userDeleted();
+    </script>
     <?php
                     endif;
+    ?>
+    <script defer="true">
+        if (isExecuted){
+            window.console.log("Success! A record have been deleted from person table in the database.")
+            isExecuted = false;
+        }
+        else {
+            window.alert("Failed to delete a record from person table in the database.")
+            window.console.warn("A record have not been deleted from person table in the database.")
+        }
+    </script>
+    <?php
                 elseif ($action_selection == "Add Room"):
                     $statement = $pdo->prepare("INSERT INTO `room`(`RoomID`, `RoomName`, `Location`, `Capacity`, `HasPCs`, `HasProjectors`, `ImageName`) VALUES (?, ?, ?, ?, ?, ?, ?)");
     ?>
@@ -441,9 +472,24 @@
                             print_r("There might be a problem in the database.");
                         }
     ?>
-    <script defer="true">roomCreated();</script>
+    <script defer="true">
+        roomCreated();
+        isExecuted = true;
+    </script>
     <?php
                     endif;
+    ?>
+    <script defer="true">
+        if (isExecuted){
+            window.console.log("Success! A record have been added to room table in the database.")
+            isExecuted = false;
+        }
+        else {
+            window.alert("Failed to add a record to room table in the database.")
+            window.console.warn("A record have not been added to room table in the database.")
+        }
+    </script>
+    <?php
                 elseif ($action_selection == "Delete Room"):
     ?>
     <div class="container" id="bookDelete">
@@ -459,9 +505,24 @@
                         $action->bindParam(':roomID', $_GET["looking"]);
                         $action->execute();
     ?>
-    <script defer="true">roomDeleted();</script>
+    <script defer="true">
+        isExecuted = true;
+        roomDeleted();
+    </script>
     <?php
                     endif;
+    ?>
+    <script defer="true">
+        if (isExecuted){
+            window.console.log("Success! A record have been deleted from room table in the database.")
+            isExecuted = false;
+        }
+        else {
+            window.alert("Failed to delete a record from room table in the database.")
+            window.console.warn("A record have not been deleted from room table in the database.")
+        }
+    </script>
+    <?php
                 elseif ($action_selection == "Edit Room"):
     ?>
     <div class="container" id="bookEdit">
@@ -534,9 +595,24 @@
                             print_r("There might be a problem in the database.");
                         }
     ?>
-    <script defer="true">roomModified();</script>
+    <script defer="true">
+        isExecuted = true;
+        roomModified();
+    </script>
     <?php
                     endif;
+    ?>
+    <script defer="true">
+        if (isExecuted){
+            window.console.log("Success! A record have been modified in room table in the database.")
+            isExecuted = false;
+        }
+        else {
+            window.alert("Failed to modify a record in room table in the database.")
+            window.console.warn("A record have not been modified in room table in the database.")
+        }
+    </script>
+    <?php
                 endif;
             endif;
         }
