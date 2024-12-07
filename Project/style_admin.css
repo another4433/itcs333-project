@@ -7,45 +7,57 @@ header {
 }
 
 body {
-    background: blue;
     color: #F0F6FC;
     font-family: sans-serif;
     font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    gap:40px;
 }
 
 h1 {
     text-align: center;
     font-size: 1.5em;
     font-weight: 400;
-    padding-top: 4em;
+    padding-top: 1em;
+    color: #F0F6FC;
 }
 
-@media screen {
-    html {
-        max-width: 288px;
-        margin: auto;
-    }
+html {
+    box-sizing: auto;
+    font-family: Arial, sans-serif;
+    background-color: blue;
 }
 
 .container {
     font-size: 0.875em;
-    background: #151B23;
+    background: blueviolet;
     margin: auto;
     width: auto;
     padding: 1.15em;
     border: max(1px, 0.0625rem) solid rgba(61, 68, 77, 0.7019607843);
     border-radius: 5px;
+    width: 95%;
+    border-color: black;
+    border: 3px 3px 3px 3px;
+    border-radius: 2em;
 }
 
 .container form {
-    display: flex;
-    flex-direction: column;
     justify-content: space-around;
     gap: 8px;
 }
+
+.container form > label {
+    display: flex;
+    flex-direction: row;
+    color: #F0F6FC;
+}
   
 .container form input {
-    background: #0d1117;
+    background: black;
     border: max(1px, 0.0625rem) solid rgba(61, 68, 77, 0.7019607843);
     padding: 5px 12px;
     border-radius: 25px;
@@ -58,4 +70,12 @@ h1 {
     color: red;
     font-size: 14px;
     margin-top: 4px;
+}
+
+form {
+    width: 100%;
+}
+
+label ~ input {
+    margin: center;
 }
