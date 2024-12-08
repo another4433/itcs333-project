@@ -35,6 +35,8 @@ main {
 }
 
 .timeSpan {
+  display: flex;
+  flex-flow: column;
   width: 95%;
   height:100%;
   background-color: green;
@@ -48,13 +50,23 @@ main {
   text-align: center;
 }
 
-.firstHalfBooked {
-  background: (to top, orange 50%, blue 50%);
-}
-.secondHalfBooked {
-  background: (to bottom, orange 50%, blue 50%);
+#firstHalf {
+  width: 100%;
+  height: 50%;
 }
 
-.allBooked {
+#secondHalf {
+  width: 100%;
+  height: 50%;
+}
+
+.firstHalfBooked {
+  background-image: linear-gradient(to top, transparent 50%, blue 50%);
+}
+.secondHalfBooked {
+  background-image: linear-gradient(to top, blue 50%, transparent 50%);
+}
+
+.booked {
   background-color: blue;
 }

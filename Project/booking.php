@@ -54,6 +54,8 @@ function validation() {
   //  $endTime
   //]);
   //die(); 
+  if($date->format("l") === "Friday")
+    return "You can't book a room on friday";
   if($startTime > $endTime)
     return "The start Time of the booking must be less than the end Time.";
   if($startTime == $endTime)

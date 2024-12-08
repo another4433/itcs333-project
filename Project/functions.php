@@ -24,13 +24,13 @@ function conflictCheck(DateTime $date, DateTime $startTime,DateTime $endTime): s
 
   $sql = "SELECT * FROM booking " . 
           "WHERE :date = booking.Date AND " .
-          ":startTime < booking.EndTime AND :startTime > booking.StartTime OR "  . 
-          ":endTime < booking.EndTime AND :endTime > booking.StartTime ";
+          ":startTime <= booking.EndTime AND :startTime >= booking.StartTime OR "  . 
+          ":endTime <= booking.EndTime AND :endTime >= booking.StartTime ";
 
   $result = dbQuery($connection, $sql, [
     ":date" => $date->format("Y-m-d"),
-    ":startTime" => $startTime->format("H:i:00"),
-    ":endTime" => $endTime->format("H:i:00")
+    ":startTime" => $startTime->format("H:i:s"),
+    ":endTime" => $endTime->format("H:i:s")
   ]);
 
   if(isset($result['error']))
