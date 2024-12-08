@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 02, 2024 at 10:56 AM
+-- Generation Time: Dec 08, 2024 at 09:08 AM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.18
 
@@ -33,9 +33,8 @@ CREATE TABLE IF NOT EXISTS `booking` (
   `RoomID` int NOT NULL,
   `StartTime` time NOT NULL,
   `EndTime` time NOT NULL,
-  `StartDate` date NOT NULL,
-  `EndDate` date NOT NULL,
-  `Description` varchar(255) DEFAULT NULL,
+  `Date` date NOT NULL,
+  `Description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`PersonID`,`RoomID`),
   KEY `RoomID` (`RoomID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -63,12 +62,12 @@ CREATE TABLE IF NOT EXISTS `favourite` (
 DROP TABLE IF EXISTS `person`;
 CREATE TABLE IF NOT EXISTS `person` (
   `PersonID` int NOT NULL AUTO_INCREMENT,
-  `FirstName` varchar(50) NOT NULL,
+  `FirstName` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `LastName` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `Email` varchar(80) NOT NULL,
-  `Password` varchar(255) NOT NULL,
+  `Email` varchar(80) COLLATE utf8mb4_general_ci NOT NULL,
+  `Password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `hasAdmin` tinyint(1) NOT NULL DEFAULT '0',
-  `ImageName` varchar(50) DEFAULT NULL,
+  `ImageName` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`PersonID`),
   UNIQUE KEY `Email` (`Email`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -89,12 +88,12 @@ INSERT INTO `person` (`PersonID`, `FirstName`, `LastName`, `Email`, `Password`, 
 DROP TABLE IF EXISTS `room`;
 CREATE TABLE IF NOT EXISTS `room` (
   `RoomID` int NOT NULL AUTO_INCREMENT,
-  `RoomName` varchar(100) NOT NULL,
-  `Location` varchar(100) NOT NULL,
+  `RoomName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `Location` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `Capacity` int DEFAULT NULL,
   `HasPCs` tinyint(1) NOT NULL,
   `HasProjectors` tinyint(1) NOT NULL,
-  `ImageName` varchar(255) DEFAULT NULL,
+  `ImageName` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`RoomID`),
   UNIQUE KEY `RoomName` (`RoomName`)
 ) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

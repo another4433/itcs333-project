@@ -19,37 +19,25 @@ function dbQuery(PDO $connection, string $sql, array $paramaters): array {
   return $statement->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function conflictCheck(DateTime $startDate,DateTime $endDate, DateTime $startTime,DateTime $endTime): string {
+function conflictCheck(DateTime $date, DateTime $startTime,DateTime $endTime): string {
   $connection = databaseConnect();
-  $sql = "SELECT * FROM booking " . 
-          "WHERE :startDate < booking.EndDate AND :startDate > booking.StartDate OR "  . 
-          ":endDate < booking.EndDate AND :endDate > booking.StartDate ";
-
-  $result = dbQuery($connection, $sql, [
-    ":startDate" => $startDate->format("Y-m-d"),
-    ":endDate" => $endDate->format("Y-m-d")
-  ]);
-
-  if(isset($result['error']))
-    return $result['error'];
-
-  if(count($result) > 0)
-    return "Invalid booking, your bookings' date conflicts with another bookings' date";
 
   $sql = "SELECT * FROM booking " . 
-          "WHERE :startTime < booking.EndTime AND :startTime > booking.startTime OR "  . 
-          ":endTime < booking.EndTime AND :endTime > booking.StartDate ";
+          "WHERE :date = booking.Date AND " .
+          ":startTime < booking.EndTime AND :startTime > booking.StartTime OR "  . 
+          ":endTime < booking.EndTime AND :endTime > booking.StartTime ";
 
   $result = dbQuery($connection, $sql, [
-    ":startTime" => $startTime->format("H:i:s"),
-    ":endTime" => $endTime->format("H:i:s")
+    ":date" => $date->format("Y-m-d"),
+    ":startTime" => $startTime->format("H:i:00"),
+    ":endTime" => $endTime->format("H:i:00")
   ]);
 
   if(isset($result['error']))
     return $result['error'];
 
   if(count($result) > 0) 
-    return "Invalid booking, your bookings' time conflicts with another bookings' time";
+    return "Your booking is conflicting with another booking";
 
   return "good";
 }

@@ -37,8 +37,7 @@ function validation() {
   if($_SERVER['REQUEST_METHOD'] !== "POST")
     return "";
 
-  $startDate = DateTime::createFromFormat("Y-m-d", $_POST['startDate']);
-  $endDate = DateTime::createFromFormat("Y-m-d", $_POST['endDate']);
+  $date = DateTime::createFromFormat("Y-m-d", $_POST['date']);
   $startTime = DateTime::createFromFormat("H:i:s", $_POST['startTime'] . ":00");
   $endTime = DateTime::createFromFormat("H:i:s", $_POST['endTime'] . ":00");
 
@@ -55,15 +54,13 @@ function validation() {
   //  $endTime
   //]);
   //die(); 
-  if($startDate > $endDate) 
-    return "The start date of the booking must be less than the end date.";
   if($startTime > $endTime)
     return "The start Time of the booking must be less than the end Time.";
   if($startTime == $endTime)
     return "The start Time of the booking must not be equal to the end Time.";
 
-  $status = conflictCheck($startDate, $endDate, $startTime, $endTime);
-  if($status !== "good")
+  $status = conflictCheck($date, $startTime, $endTime);
+  if($status !== "good") 
     return $status;
 } 
 ?>
@@ -71,14 +68,13 @@ function validation() {
 <html lang=en>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="script.js" defer></script>
     <meta charset="utf-8"/>
     <title>Booking</title>
   </head>
   <body>
     <p><?=validation()?></p>
     <header>Booking</header>
-    <form action="bookingController.php" method="POST">
+    <form action="booking.php" method="POST">
       <label>Time: 
         <select name="startTime">
           <?=printTimes()?>
@@ -89,9 +85,7 @@ function validation() {
         </select>
       </label><br>
       <label>Date:
-        <input type="date" id="startDate" name="startDate" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>" required/>
-        <span>To</span>
-        <input type="date" id="endDate" name="endDate" min="<?=date("Y-m-d")?>" required/>
+        <input type="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>" required/>
       </label><br>
       <label>Description:<br>
         <textarea name="description"></textarea>
