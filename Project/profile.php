@@ -7,58 +7,68 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $servername = "localhost";
-$username = "root"; 
+$username = "root";
 $password = "";
 $dbname = "bookingdb";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+try {
+    $dsn = "mysql:host=$servername;dbname=$dbname";
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    $userId = $_SESSION['user_id'];
+    $sql = "SELECT * FROM person WHERE PersonID = :personID";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute(['personID' => $userId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$userId = $_SESSION['user_id']; 
-$sql = "SELECT * FROM user_profiles WHERE id = $userId";
-$result = $conn->query($sql);
+    if ($row) {
+        $firstName = $row['FirstName'];
+        $lastName = $row['LastName'];
+        $email = $row['Email'];
+        $imageName = $row['ImageName'] ?: 'default-avatar.jpg'; // Default profile picture
+    } else {
+        echo "User not found!";
+        exit();
+    }
 
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $username = $row['username'];
-    $bio = $row['bio'];
-    $profilePicture = $row['profile_picture'];
-} else {
-    $username = "Not set";
-    $bio = "No bio";
-    $profilePicture = "default-avatar.jpg"; 
-}
+    // Update profile data if form is submitted
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $firstName = htmlspecialchars($_POST['firstName']);
+        $lastName = htmlspecialchars($_POST['lastName']);
+        $email = htmlspecialchars($_POST['email']);
 
-// Update profile data if form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = htmlspecialchars($_POST['username']);
-    $bio = htmlspecialchars($_POST['bio']);
-    
-    // Update profile picture if uploaded
-    if (isset($_FILES['profile-pic']) && $_FILES['profile-pic']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/';
-        $destPath = $uploadDir . basename($_FILES['profile-pic']['name']);
-        
-        if (move_uploaded_file($_FILES['profile-pic']['tmp_name'], $destPath)) {
-            $profilePicture = $destPath;
+        // Update profile picture if uploaded
+        if (isset($_FILES['profile-pic']) && $_FILES['profile-pic']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = 'uploads/';
+            $destPath = $uploadDir . basename($_FILES['profile-pic']['name']);
+            
+            if (move_uploaded_file($_FILES['profile-pic']['tmp_name'], $destPath)) {
+                $imageName = $destPath;
+            } else {
+                echo "Error uploading the profile picture.";
+            }
+        }
+
+        // Update profile in the database
+        $updateSql = "UPDATE person SET FirstName = :firstName, LastName = :lastName, Email = :email, ImageName = :imageName WHERE PersonID = :personID";
+        $updateStmt = $pdo->prepare($updateSql);
+        $updateData = [
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'email' => $email,
+            'imageName' => $imageName,
+            'personID' => $userId
+        ];
+
+        if ($updateStmt->execute($updateData)) {
+            echo "<p>Profile updated successfully!</p>";
         } else {
-            echo "Error uploading the profile picture.";
+            echo "<p>Error updating the profile.</p>";
         }
     }
-
-    // Update profile in the database
-    $updateSql = "UPDATE user_profiles SET username = ?, bio = ?, profile_picture = ? WHERE id = ?";
-    $stmt = $conn->prepare($updateSql);
-    $stmt->bind_param("sssi", $username, $bio, $profilePicture, $userId);
-
-    if ($stmt->execute()) {
-        echo "<p>Profile updated successfully!</p>";
-    } else {
-        echo "<p>Error updating the profile: " . $conn->error . "</p>";
-    }
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
 }
 ?>
 
@@ -76,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <nav>
             <ul>
                 <li><a href="index.php">Home</a></li>
-                <li><a href="profile.php">My Profile</a></li> 
+                <li><a href="profile.php">My Profile</a></li>
             </ul>
         </nav>
     </header>
@@ -86,19 +96,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1>My Profile</h1>
 
         <div class="profile-display">
-            <img src="<?php echo $profilePicture; ?>" alt="Profile Picture" class="profile-picture">
-            <h2><?php echo $username; ?></h2>
-            <p><?php echo $bio; ?></p>
+            <img src="<?php echo $imageName; ?>" alt="Profile Picture" class="profile-picture">
+            <h2><?php echo $firstName . " " . $lastName; ?></h2>
+            <p>Email: <?php echo $email; ?></p>
         </div>
 
         <div class="profile-edit-form">
             <h2>Edit Profile</h2>
             <form action="profile.php" method="post" enctype="multipart/form-data">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" value="<?php echo $username; ?>" required>
+                <label for="firstName">First Name:</label>
+                <input type="text" name="firstName" id="firstName" value="<?php echo $firstName; ?>" required>
 
-                <label for="bio">Bio:</label>
-                <textarea name="bio" id="bio" rows="4"><?php echo $bio; ?></textarea>
+                <label for="lastName">Last Name:</label>
+                <input type="text" name="lastName" id="lastName" value="<?php echo $lastName; ?>">
+
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" value="<?php echo $email; ?>" required>
 
                 <label for="profile-pic">Profile Picture:</label>
                 <input type="file" name="profile-pic" id="profile-pic" accept="image/*">
@@ -111,5 +124,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </html>
 
 <?php
-$conn->close();
+$pdo = null;
 ?>
