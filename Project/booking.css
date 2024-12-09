@@ -1,0 +1,72 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+
+main {
+  display: flex;
+  flex-direction: column;
+  background-color: blue;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.hour {
+  display: flex;
+  flex-direction: row;
+  border-bottom: 2px solid black;
+  width: 100%;
+  height: 40px;
+  background-color: red;
+}
+
+.time {
+  width:5%;
+  height: 100%;
+  background-color: orange;
+}
+
+.timeSpan {
+  display: flex;
+  flex-flow: column;
+  width: 95%;
+  height:100%;
+  background-color: green;
+}
+
+.hour .time h1 {
+  margin: 0 auto;
+  height: 50%;
+  font-size: 0.7rem;
+  border-bottom: 1px dashed black;
+  text-align: center;
+}
+
+#firstHalf {
+  width: 100%;
+  height: 50%;
+}
+
+#secondHalf {
+  width: 100%;
+  height: 50%;
+}
+
+.firstHalfBooked {
+  background-image: linear-gradient(to top, transparent 50%, blue 50%);
+}
+.secondHalfBooked {
+  background-image: linear-gradient(to top, blue 50%, transparent 50%);
+}
+
+.booked {
+  background-color: blue;
+}
