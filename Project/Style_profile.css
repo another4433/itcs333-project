@@ -1,16 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #e9eff1; /* Slightly lighter background */
+    background-color: #e9eff1; 
     margin: 0;
-    padding: 40px 20px; /* More padding to give more space */
+    padding: 40px 20px; 
 }
 
 .profile-container {
-    max-width: 700px; /* Increased width */
+    max-width: 700px; 
     margin: 0 auto;
     background-color: #ffffff;
     border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Slightly darker shadow */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); 
     padding: 30px;
 }
 
@@ -30,16 +30,16 @@ h1, h2 {
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #f2f3f5; /* Border around the image */
-    margin-bottom: 15px; /* Increased space below the picture */
+    border: 4px solid #f2f3f5; 
+    margin-bottom: 15px; 
 }
 
 .profile-picture:hover {
-    border-color: #007bff; /* Border color change on hover */
+    border-color: #007bff; 
 }
 
 .profile-display h2 {
-    font-size: 1.5em; /* Adjusted font size for the username */
+    font-size: 1.5em; 
     margin-top: 10px;
 }
 
@@ -52,7 +52,7 @@ h1, h2 {
 
 .profile-edit-form {
     margin-top: 40px;
-    border-top: 2px solid #f2f3f5; /* Light border for separation */
+    border-top: 2px solid #f2f3f5;
     padding-top: 20px;
 }
 
@@ -69,13 +69,13 @@ input[type="text"], textarea, input[type="file"] {
     padding: 12px;
     margin-bottom: 15px;
     border: 2px solid #ccc;
-    border-radius: 8px; /* Rounded borders */
+    border-radius: 8px; 
     font-size: 1em;
 }
 
 textarea {
-    height: 120px; /* Adjusted height */
-    resize: vertical; /* Allow users to resize the textarea vertically */
+    height: 120px;
+    resize: vertical;
 }
 
 input[type="file"] {
