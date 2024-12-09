@@ -113,8 +113,13 @@
                 }
             }
         }
-    }
 
+        if(isset($_GET['booking'])){
+            $RoomID=$_GET['RoomID'];
+            header("Location: booking.php?RoomID=$RoomID");
+        }
+    }
+    
 
 ?>
 
@@ -131,8 +136,8 @@
     <nav>
         <h2>welcome to browsing page</h2>
         <div>
-            <a href="">my booking</a>
-            <a href="">my profile</a>
+            <a href="myBookings.php">my booking</a>
+            <a href="profile.php">my profile</a>
         </div>
     </nav>
 
@@ -180,7 +185,7 @@
                     <div class="room-image">
                         <img src="<?php echo "Images/". $row['ImageName']; ?>" alt="">
                         <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
-                            <input type="submit" value="booking" name="">
+                            <input type="submit" value="booking" name="booking">
                             <input type="submit" value="add to favorites" name="add">
                             <input type="hidden" name="RoomID" value= <?php echo $row['RoomID']; ?>>
                         </form>
