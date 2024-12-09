@@ -10,7 +10,7 @@ if(!isset($_SESSION['userID']))
 $bookings = [
   [
     "StartTime" => "08:30:00",
-    "EndTime" => "09:00:00"
+    "EndTime" => "11:30:00"
   ]
 ];
 
