@@ -312,6 +312,7 @@
             <input name="actions" id="pAction3" type="radio" value="Add Room">Add Room<br>
             <input name="actions" id="pAction4" type="radio" value="Edit Room">Edit Room<br>
             <input name="actions" id="pAction5" type="radio" value="Delete Room">Delete Room<br>
+            <input name="actions" id="pAction7" type="radio" value="Return Back">Return back to main page<br>
             <input name="actions" id="pAction6" type="radio" value="Cancel Action" onclick="selectedChoice()" default>Cancel Action<br>
             <input name="submit2" id="psubmit2" type="submit" value="Confirm Action" onclick="notify()">
         </form><br>
@@ -342,16 +343,10 @@
                     if (isset($_POST["id"])):
                         if (isset($_POST["email"]) && isset($_POST["password"])):
                             $person = new user($_POST["id"], $_POST["email"], $_POST["password"], $_POST["Fname"], $_POST["Lname"], 0, "not available");
-                            $stmt->execute([
-                                'PersonID' => $person->getUserId(),
-                                'FirstName' => $person->getFirstName(),
-                                'LastName' => $person->getLastName(),
-                                'Email' => $person->getEmail(),
-                                'Password' => $person->getPassword(),
-                                'hasAdmin' => $person->isAdmin(),
-                                'ImageName' => $person->getImage()
-                            ]);
+                            $stmt->execute([$person->getUserId(), $person->getFirstName(), $person->getLastName(), $person->getEmail(), $person->getPassword(), $person->isAdmin(), $person->getImage()]);
+                            $nextRecord = $stmt->fetch();
                             echo "New record inserted with ID: " . $pdo->lastInsertId()."<br>";
+                            echo "Next record retrieved: " . $nextRecord."<br>";
     ?>
     <script defer="true">
         userCreated();
@@ -454,16 +449,10 @@
                         endif;
                         $fileName = basename($_FILES["ImageName"]);
                         $roomDetails = new Room($_POST["roomID"], $_POST["location"], $_POST["capacity"], $_POST["roomName"], $_POST["hasPCs"], $_POST["hasProjectors"], $fileName);
-                        $statement->execute([
-                            'RoomID' => $roomDetails->getRoomId(),
-                            'RoomName' => $roomDetails->getRoomName(),
-                            'Location' => $roomDetails->getLocation(),
-                            'Capacity' => $roomDetails->getSize(),
-                            'HasPCs' => $roomDetails->getHasPC(),
-                            'HasProjectors' => $roomDetails->getHasProjector(),
-                            'ImageName' => $roomDetails->getImage()
-                        ]);
+                        $statement->execute([$roomDetails->getRoomId(), $roomDetails->getRoomName(), $roomDetails->getLocation(), $roomDetails->getSize(), $roomDetails->getHasPC(), $roomDetails->getHasProjector(), $roomDetails->getImage()]);
+                        $nextRecord = $statement->fetch();
                         echo "New record inserted with ID: " . $pdo->lastInsertId()."<br>";
+                        echo "Next record retrieved: " . $nextRecord."<br>";
                         $pattern = "{(\w+).(\w+)}";
                         if (preg_match($pattern, $fileName)){
                             print_r("Database have been interacted without any problem.");
@@ -501,7 +490,7 @@
     </div>
     <?php
                     $action = $pdo->prepare("DELETE FROM `room` WHERE `RoomID` = :roomID");
-                    if (isset($_GET["Submit"]) && isset($_GET["looking"]) && $_GET["Submit"] == "Submit"):
+                    if (isset($_GET["looking"])):
                         $action->bindParam(':roomID', $_GET["looking"]);
                         $action->execute();
     ?>
@@ -571,29 +560,18 @@
                         endif;
                         $newFile = basename($_FILES["editFile"]);
                         $change_room = new Room($_POST["oldID"], $_POST["newlocation"], $_POST["newcapacity"], $_POST["newroomName"], $_POST["newhasPCs"], $_POST["newhasProjectors"], $newFile);
-                        $data = [
-                            'RoomName' => $change_room->getRoomName(),
-                            'Location' => $change_room->getLocation(),
-                            'Capacity' => $change_room->getSize(),
-                            'HasPCs' => $change_room->getHasPC(),
-                            'HasProjectors' => $change_room->getHasProjector(),
-                            'ImageName' => $change_room->getImage()
-                        ];
-                        $concat = "";
-                        foreach ($data as $single):
-                            $concat = $concat.$single." ";
-                        endforeach;
-                        $concat = rtrim($concat, ',');
+                        $data = [$change_room->getRoomName(), $change_room->getLocation(), $change_room->getSize(), $change_room->getHasPC(), $change_room->getHasProjector(), $change_room->getImage()];
+                        $concat = "`RoomName` = ".$change_room->getRoomName().", `Location` = ".$change_room->getLocation().", `Capacity` = ".$change_room->getSize().", `HasPCs = ".$change_room->getHasPC().", `HasProjectors".$change_room->getHasProjector().", `ImageName` = ".$change_room->getImage()." ";
                         $temporary = $pdo->prepare("UPDATE `room` SET $concat WHERE `RoomID` = :roomID");
                         $temporary->bindParam(":roomID", $_POST["oldID"]);
                         $temporary->execute($data);
                         $pattern = "{(\w+).(\w+)}";
-                        if (preg_match($pattern, $editFile)){
-                            print_r("Database have been interacted without any problem.");
-                        }
-                        else {
-                            print_r("There might be a problem in the database.");
-                        }
+                        if (preg_match($pattern, $editFile))
+                            print_r("Database have been interacted without any problem. <br>");
+                        else 
+                            print_r("There might be a problem in the database. <br>");
+                        $nextRecord = $temporary->fetch();
+                        echo "Next record retrieved: " . $nextRecord."<br>";
     ?>
     <script defer="true">
         isExecuted = true;
@@ -613,6 +591,14 @@
         }
     </script>
     <?php
+                elseif ($action_selection = "Return Back"):
+    ?>
+    <script>
+        window.alert("Thank you for using admin dashboard!");
+        window.console.log("Client exited Admin dashboard page.");
+    </script>
+    <?php
+                    header("Location: browsing.php");
                 endif;
             endif;
         }
