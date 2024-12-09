@@ -33,7 +33,7 @@ function printTimes() {
 
 
 
-function validation() {
+function addBooking() {
   if($_SERVER['REQUEST_METHOD'] !== "POST")
     return "";
 
@@ -74,7 +74,7 @@ function validation() {
     <title>Booking</title>
   </head>
   <body>
-    <p><?=validation()?></p>
+    <p><?=addBooking()?></p>
     <header>Booking</header>
     <form action="booking.php" method="POST">
       <label>Time: 
