@@ -1,60 +1,24 @@
 <?php
 require "functions.php";
-    $personID=1;
-    $msg="";
-     try{
-        require_once('connection.php');
-        $sql="SELECT * FROM ROOM ";
-        $stmt=$db->prepare($sql);
-        $stmt->execute();
-        if($stmt->rowcount()==0){
-            $msg="there's no room";
-        }
-        $sql1="SELECT distinct Location FROM room";
-        $stmt1=$db->prepare($sql1);
-        $stmt1->execute();
-    }catch(PDOException $ex) {
-        echo "there's error";
-        die ($ex->getMessage());
-    }
-
+session_start();
+if(!isset($_SESSION['userID']))
+  exit("Your are not authorized to view this page");
 
 function printBookings():string {
   $connection = databaseConnect();
-  //$sql = "Select Room.RoomID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
-  //      "From booking, room " .
-  //      "Where booking.RoomID = room.RoomID AND " . 
-  //      "PersonID = :userID";
-  //
-  //$SQLResult = dbQuery($connection, $sql, [
-  //  'userID' => $_SESSION['userID']
-  //]);
-  //
-  //if(isset($SQLResult['error']))
-  //  return $SQLResult['error'];
-
-  $SQLResult = [
-    [
-      'RoomID' => '1',
-      'PersonID' => '3',
-      'Date' => '2024-12-5',
-      'StartTime' => '10:00:00',
-      'EndTime' => "12:00:00" ,
-      "RoomName" => "hello",
-      "Location" => "this is the location",
-      "ImageName" => '674d8a045d1a3.jpg'
-    ],
-    [
-      'RoomID' => '2',
-      'PersonID' => '3',
-      'Date' => '2024-12-7',
-      'StartTime' => '10:00:00',
-      'EndTime' => "12:00:00" ,
-      "RoomName" => "hi",
-      "Location" => "this is the location",
-      "ImageName" => '674d8a045d1a3.jpg'
-    ]
-  ];
+  $date = date("Y-m-d");
+  $currentTime = date("H:s:i");
+  $sql = "Select Room.RoomID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
+        "From booking, room " .
+        "Where booking.RoomID = room.RoomID AND " .
+        "PersonID = :userID";
+  
+  $SQLResult = dbQuery($connection, $sql, [
+    ':userID' => $_SESSION['userID'],
+  ]);
+  
+  if(isset($SQLResult['error']))
+    exit($SQLResult['error']);
 
 
   $result = "";
@@ -77,7 +41,7 @@ function printBookings():string {
                 "</div>". 
                 "<form action='newMyBookings.php' method='POST'>". 
                   "<input type='hidden' name='roomID' value='<?={$booking['RoomID']}?>'>". 
-                  "<input type='hidden' name='personID' value='<?={$booking['PersonID']}?>'>". 
+                  "<input type='hidden' name='personID' value='<?={$_SESSION['userID']}?>'>". 
                   "<button type='submit'>Delete</button>". 
                 "</form>". 
               "</div>";

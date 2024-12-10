@@ -6,6 +6,15 @@
 
 }
 
+.logout {
+   background-color: rgba(0, 0, 0, 0);
+   color:red;
+   font-size: 18px;
+   font-weight: 500;
+   border: none;
+
+}
+
 body {
     background-color: #1E1F26;
     display: flex;

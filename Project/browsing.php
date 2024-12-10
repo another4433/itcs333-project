@@ -119,8 +119,8 @@
         }
 
         if(isset($_GET['booking'])){
-            $RoomID=$_GET['RoomID'];
-            header("Location: booking.php?RoomID=$RoomID");
+          $_SESSION['roomID'] = $_GET['RoomID'];
+          header("Location: booking.php");
         }
 
         if(isset($_GET['logout'])){

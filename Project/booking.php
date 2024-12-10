@@ -2,12 +2,18 @@
 require "functions.php";
 session_start();
 
-if(!isset($_SESSION['userID']))
+if(!isset($_SESSION['userID']) || !isset($_SESSION['roomID']))
   exit("You are not authorized to view this page");
 
 
 $personID = $_SESSION['userID'];
 
+function printStatus(string $status, string $message): String {
+  return ""  .
+        "<div class='status $status'>" . 
+          "<h2>$message</h2>" .
+        "</div>";
+}
 function printTimes() {
   $zeroMinutes = "00";
   $thirtyMinutes = "30";
@@ -45,7 +51,8 @@ function printTimeline() {
 
   $sql = "SELECT StartTime, EndTime ". 
           "FROM booking ". 
-          "WHERE Booking.Date = :date ";
+          "WHERE booking.Date = :date AND " . 
+          "booking.RoomID = :roomID ";
 
   $currentDate = date("Y-m-d");
   $currentTime = date("H:s:i");
@@ -55,7 +62,8 @@ function printTimeline() {
 
 
   $result = dbQuery($connection, $sql, [
-    ":date" => $date->format("Y-m-d")
+    ":date" => $date->format("Y-m-d"),
+    ":roomID" => $_SESSION['roomID']
   ]);
 
   if(isset($result['error']))
@@ -66,12 +74,6 @@ function printTimeline() {
 }
 
 function helperTimeline($bookings) {
-  $bookings = [
-    [
-      "StartTime" => "08:30:00",
-      "EndTime" => "12:30:00"
-    ]
-  ];
   $result = "";
   $time = DateTime::createFromFormat("H:i:s", "8:00:00");
   $nextTime = clone $time;
@@ -154,16 +156,52 @@ function addBooking() {
   //  $endTime
   //]);
   //die(); 
-  if($date->format("l") === "Friday")
-    return "You can't book a room on friday";
-  if($startTime > $endTime)
-    return "The start Time of the booking must be less than the end Time.";
-  if($startTime == $endTime)
-    return "The start Time of the booking must not be equal to the end Time.";
+  if($date->format("l") === "Friday") {
+    $message = "You can't book a room on friday";
+    return printStatus("red", $message);
+  } 
+  if($startTime > $endTime) {
+    $message = "The start time of the booking must be less than the end time.";
+    return printStatus("red", $message);
+  }
+  if($startTime == $endTime) {
+    $message =  "The start time of the booking must not be equal to the end time.";
+    return printStatus("red", $message);
+  }
+  if(
+    $date == DateTime::createFromFormat("Y-m-d", date("Y-m-d")) && 
+    $startTime <= DateTime::createFromFormat("H:s:i" ,date("H:s:i"))
+  ) {
+    $message = "Invalid booking, the date and time of your booking should be less than the current date and time";
+    return printStatus("red" , $message);
+  }
 
   $status = conflictCheck($date, $startTime, $endTime);
-  if($status !== "good") 
-    return $status;
+  if($status !== "good") {
+    return printStatus("red", $status);
+  }
+
+  $connection = databaseConnect();
+
+
+  $sql = "INSERT INTO booking " . 
+        "Values(:personID, :roomID, :startTime, :endTime, :date, :description)";
+  try {
+    $query = $connection->prepare($sql);
+    $query->execute([
+      ":personID" => $_SESSION['userID'],
+      ":roomID" => $_SESSION['roomID'],
+      ":startTime" => $startTime->format("H:s:i"),
+      ":endTime" => $endTime->format("H:s:i"),
+      ":date" => $date->format("Y-m-d"),
+      ":description" => htmlspecialchars($_POST['description'])
+    ]);
+  } catch (PDOException $th) {
+    exit($th->getMessage());
+  }
+
+  return printStatus("green", "Booking Successful");
+
 } 
 ?>
 
@@ -175,13 +213,15 @@ function addBooking() {
   <title>Booking</title>
 </head>
 <body>
+  <header>
     <nav>
       <h2>Add Booking</h2>
       <a href="browsing.php">browsing</a>
     </nav>
     <?=addBooking()?>
+  </header>
   <main>
-    <form class="bookingForm" action="booking.php" method="POST">
+    <form class="bookingForm" action=booking.php method="POST">
       <label>Duration: </label>
       <div class="duration">
         <select id="startTime" name="startTime">
