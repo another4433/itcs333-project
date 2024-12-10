@@ -127,7 +127,7 @@
           SESSION_unset();
           // destroy($_SESSION);
           header("Location: Login_Register/index.php");
-        }
+        }
   }
     
 
@@ -148,9 +148,11 @@
         <div>
             <a href="myBookings.php">my booking</a>
             <a href="profile.php">my profile</a>
-            <a href=""><form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
-            <input class="logout" type="submit" value="logout" name="logout">
-        </form></a>
+            <a href="">
+              <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
+                <input class="logout" type="submit" value="logout" name="logout">
+              </form>
+            </a>
         </div>
     </nav>
 
