@@ -173,38 +173,37 @@ function addBooking() {
   <title>Booking</title>
 </head>
 <body>
-  <p><?=addBooking()?></p>
-  <header>Booking</header>
+    <nav>
+      <h2>Add Booking</h2>
+      <a href="browsing.php">browsing</a>
+    </nav>
+    <?=addBooking()?>
   <main>
-    <section class="bookingForm">
-      <form action="booking.php" method="POST">
-        <label>Time: 
-          <select name="startTime">
-            <?=printTimes()?>
-          </select>
-          <span>To</span>
-          <select name="endTime">
-            <?=printTimes()?>
-          </select>
-        </label><br>
-        <label>Date:
-          <input type="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>" required/>
-        </label><br>
-        <label>Description:<br>
-          <textarea name="description"></textarea>
-        </label><br>
-        <input type="hidden" name="requestType" value="addBooking">
-        <input type="submit" value="Submit"/>
-      </form>
-    </section>
-    <section class="timelineTable">
-      <form action="booking.php" method="POST">
-        <input type="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>"/>
-        <input type="hidden" name="requestType" value="generateTimeline">
-        <input type="submit" value="View Bookings"/>
-      </form>
+    <form class="bookingForm" action="booking.php" method="POST">
+      <label>Duration: </label>
+      <div class="duration">
+        <select id="startTime" name="startTime">
+          <?=printTimes()?>
+        </select>
+        <select name="endTime">
+          <?=printTimes()?>
+        </select>
+      </div>
+      <label for="date">Date:</label>
+      <div class="date">
+        <input type="date" id="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>" required/>
+      </div>
+      <label for="description">Description:</label>
+      <textarea id="description" name="description"></textarea>
+      <input type="hidden" name="requestType" value="addBooking">
+      <input type="submit" value="Submit"/>
+    </form>
+    <form class="timelineTable" action="booking.php" method="POST">
+      <input type="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>"/>
+      <input type="hidden" name="requestType" value="generateTimeline">
+      <input type="submit" value="View Bookings"/>
       <?=printTimeline()?>
-    </section>
+    </form>
   </main>
 </body>
 </html>
