@@ -1,35 +1,23 @@
 <?php
 require "functions.php";
-$user = "1";
-$_SESSION["userID"] = $user;
+    $personID=1;
+    $msg="";
+     try{
+        require_once('connection.php');
+        $sql="SELECT * FROM ROOM ";
+        $stmt=$db->prepare($sql);
+        $stmt->execute();
+        if($stmt->rowcount()==0){
+            $msg="there's no room";
+        }
+        $sql1="SELECT distinct Location FROM room";
+        $stmt1=$db->prepare($sql1);
+        $stmt1->execute();
+    }catch(PDOException $ex) {
+        echo "there's error";
+        die ($ex->getMessage());
+    }
 
-function deleteBooking():string {
-  if($_SERVER['REQUEST_METHOD'] !== "POST") {
-    return '';
-  }
-
-  $connection = databaseConnect();
-  $roomID = $_POST['roomID'];
-  $personID = $_POST['personID'];
-
-  $sql = "DELETE FROM booking " . 
-          "WHERE RoomID = :roomID AND ". 
-          "PersonID = :personID";
-
-  try {
-    $statment = $connection->prepare($sql);
-    $statment->execute([
-      ":roomID" => $roomID,
-      ":personID" => $personID
-    ]);
-  } catch (PDOException $th) {
-    exit("Something went wrong with the delete query:" . $th->getMessage());
-
-  }
-
-  return "hello world";
-
-}
 
 function printBookings():string {
   $connection = databaseConnect();
@@ -72,45 +60,62 @@ function printBookings():string {
   $result = "";
   foreach($SQLResult As $booking) {
     $result = $result . 
-              "<div class='booking'>" .
-                "<div class='roomPhoto'>" . 
-                  "<img src='Images\\$booking[ImageName]'" . 
-                "</div>" . 
-                "<div class='bookingInfo'>" .
-                  "<p>{$booking['Date']}</p>" .
-                  "<div class='timeLine'>" .
-                    "<p class='startTime'>{$booking['StartTime']}</p>" . 
-                    "<p class='endTime'>{$booking['EndTime']}</p>" .
-                  "</div>".
-                  "<div class='roomInfo'>" .
-                    "<p class='roomName'>{$booking['RoomName']}</p>" .
-                    "<p class='location'>{$booking['Location']}</p>" .
-                  "</div>".
-                "</div>".
-                "<form action='myBookings.php' method='POST'>" . 
-                  "<input type='hidden' name='roomID' value='<?={$booking['RoomID']}?>'>" .
-                  "<input type='hidden' name='personID' value='<?={$booking['PersonID']}?>'>" .
-                  "<button type='submit'>Delete</button>" .
-                "</form>" .
+              "<div class='room'>". 
+                "<div class='room-image'>". 
+                  "<img src='Images\\$booking[ImageName]'>". 
+                "</div>". 
+                "<h3>{$booking['RoomName']}</h3>". 
+                "<div class='room-info'>". 
+                  "<p>{$booking['Date']}</p>". 
+                  "<div class='timeLine'>". 
+                    "<p class='startTime'>{$booking['StartTime']}</p>". 
+                    "<p class='endTime'>{$booking['EndTime']}</p>". 
+                  "</div>". 
+                  "<div class='roomInfo'>". 
+                    "<p class='location'>{$booking['Location']}</p>". 
+                  "</div>". 
+                "</div>". 
+                "<form action='newMyBookings.php' method='POST'>". 
+                  "<input type='hidden' name='roomID' value='<?={$booking['RoomID']}?>'>". 
+                  "<input type='hidden' name='personID' value='<?={$booking['PersonID']}?>'>". 
+                  "<button type='submit'>Delete</button>". 
+                "</form>". 
               "</div>";
   }
 
   return $result;
 }
+     
+    
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Bookings</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="myBookings.css">
 </head>
 <body>
-  <p><?=deleteBooking()?></p>
-  <nav></nav>
-  <main>
-    <?=printBookings()?>
-  </main>
+
+
+  <nav>
+      <h2>My Bookings</h2>
+      <div>
+          <a href="browsing.php">browse rooms</a>
+          <a href="profile.php">my profile</a>
+      </div>
+  </nav>
+
+  <div class="container">
+    <div class="ALLroom">
+      <div class="msg">
+        <h3><?php if(isset($msg)) echo $msg; ?></h3>
+        <h3><?php if(isset($msg2)) echo $msg2; ?></h3>
+      </div>
+      <?=printBookings()?>
+    </div>
+  </div>
 </body>
 </html>
