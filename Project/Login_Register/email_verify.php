@@ -32,7 +32,8 @@
             $stmt->execute(['email' => $personEmail]);
             $row = $stmt->fetch();
             if ($row && password_verify($personPass, $row->Password)) {
-                ($row->hasAdmin==0) ? header("location: ../student.php") : header("location: ../system_administrator.php");
+                $_SESSION['userID'] = $row->PersonID;
+                ($row->hasAdmin==0) ? header("location: ../browsing.php") : header("location: ../system_administrator.php");
             } else {
                 $error = "<p class='error'>Invalid email or password!</p>";
             }

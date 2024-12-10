@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['userID'])) {
     header("Location: index.php");
     exit();
 }
@@ -16,7 +16,7 @@ try {
     $pdo = new PDO($dsn, $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $userId = $_SESSION['user_id'];
+    $userId = $_SESSION['userID'];
     $sql = "SELECT * FROM person WHERE PersonID = :personID";
     $stmt = $pdo->prepare($sql);
     $stmt->execute(['personID' => $userId]);
@@ -26,7 +26,7 @@ try {
         $firstName = $row['FirstName'];
         $lastName = $row['LastName'];
         $email = $row['Email'];
-        $imageName = $row['ImageName'] ?: 'default-avatar.jpg'; // Default profile picture
+        $imageName = $row['ImageName'] ?: 'default.png'; // Default profile picture
     } else {
         echo "User not found!";
         exit();
@@ -40,7 +40,7 @@ try {
 
         // Update profile picture if uploaded
         if (isset($_FILES['profile-pic']) && $_FILES['profile-pic']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = 'uploads/';
+            $uploadDir = 'images/';
             $destPath = $uploadDir . basename($_FILES['profile-pic']['name']);
             
             if (move_uploaded_file($_FILES['profile-pic']['tmp_name'], $destPath)) {
@@ -96,7 +96,7 @@ try {
         <h1>My Profile</h1>
 
         <div class="profile-display">
-            <img src="<?php echo $imageName; ?>" alt="Profile Picture" class="profile-picture">
+            <img src="<?php echo "Images\$imageName" ?>" alt="Profile Picture" class="profile-picture">
             <h2><?php echo $firstName . " " . $lastName; ?></h2>
             <p>Email: <?php echo $email; ?></p>
         </div>

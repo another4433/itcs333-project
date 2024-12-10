@@ -1,10 +1,12 @@
 <?php
 require "functions.php";
-$user = "test@stu.uob.edu.bh";
-$_SESSION["userID"] = $user;
+session_start();
 
 if(!isset($_SESSION['userID']))
   exit("You are not authorized to view this page");
+
+
+$personID = $_SESSION['userID'];
 
 function printTimes() {
   $zeroMinutes = "00";

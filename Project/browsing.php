@@ -1,5 +1,9 @@
 <?php
-    $personID=1;
+    session_start();
+    if(!isset($_SESSION['userID']))
+      exit("you are not authorized to enter this room");
+
+    $personID = $_SESSION['userID'];
     $msg="";
      try{
         require_once('connection.php');
@@ -118,7 +122,13 @@
             $RoomID=$_GET['RoomID'];
             header("Location: booking.php?RoomID=$RoomID");
         }
-    }
+
+        if(isset($_GET['logout'])){
+          SESSION_unset();
+          // destroy($_SESSION);
+          header("Location: Login_Register/index.php");
+        }
+  }
     
 
 ?>
@@ -138,6 +148,9 @@
         <div>
             <a href="myBookings.php">my booking</a>
             <a href="profile.php">my profile</a>
+            <a href=""><form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="GET">
+            <input class="logout" type="submit" value="logout" name="logout">
+        </form></a>
         </div>
     </nav>
 

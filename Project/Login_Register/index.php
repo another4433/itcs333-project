@@ -1,5 +1,10 @@
 <?php
+    session_start();
     include("email_verify.php");
+
+    if(isset($_SESSION['userID'])) {
+      header("Location: ../browsing.php");
+    }
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_SPECIAL_CHARS);
@@ -10,6 +15,7 @@
         } else {
             verifyUOB($email, $password);
         }
+
     }
 ?>
 <!DOCTYPE html>
