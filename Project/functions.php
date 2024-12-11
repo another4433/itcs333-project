@@ -24,8 +24,8 @@ function conflictCheck(DateTime $date, DateTime $startTime,DateTime $endTime): s
 
   $sql = "SELECT * FROM booking " . 
           "WHERE :date = booking.Date AND " .
-          ":startTime <= booking.EndTime AND :startTime >= booking.StartTime OR "  . 
-          ":endTime <= booking.EndTime AND :endTime >= booking.StartTime ";
+          "(:startTime <= booking.EndTime AND :startTime >= booking.StartTime OR "  . 
+          ":endTime <= booking.EndTime AND :endTime >= booking.StartTime) ";
 
   $result = dbQuery($connection, $sql, [
     ":date" => $date->format("Y-m-d"),

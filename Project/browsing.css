@@ -38,7 +38,8 @@ nav div{
     width: 20%;
     display: flex;
     justify-content: space-between;
-    }
+    align-items: center;
+}
 
 nav div a{
     text-decoration: none;

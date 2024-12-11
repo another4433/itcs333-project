@@ -1,5 +1,6 @@
 <?php
 require "functions.php";
+require "bahrainTimezone.php";
 session_start();
 
 if(!isset($_SESSION['userID']) || !isset($_SESSION['roomID']))
@@ -67,7 +68,7 @@ function printTimeline() {
   ]);
 
   if(isset($result['error']))
-    return $result['error'];
+    exit($result['error']);
 
   $bookings = $result;
   return helperTimeline($bookings);
@@ -139,6 +140,7 @@ function addBooking() {
   if($_POST['requestType'] !== "addBooking")
     return "";
 
+
   $date = DateTime::createFromFormat("Y-m-d", $_POST['date']);
   $startTime = DateTime::createFromFormat("H:i:s", $_POST['startTime'] . ":00");
   $endTime = DateTime::createFromFormat("H:i:s", $_POST['endTime'] . ":00");
@@ -184,24 +186,23 @@ function addBooking() {
   $connection = databaseConnect();
 
 
-  $sql = "INSERT INTO booking " . 
+  $sql = "INSERT INTO booking (PersonID, RoomID, StartTime, EndTime, Date, Description)" . 
         "Values(:personID, :roomID, :startTime, :endTime, :date, :description)";
-  try {
-    $query = $connection->prepare($sql);
-    $query->execute([
-      ":personID" => $_SESSION['userID'],
-      ":roomID" => $_SESSION['roomID'],
-      ":startTime" => $startTime->format("H:s:i"),
-      ":endTime" => $endTime->format("H:s:i"),
-      ":date" => $date->format("Y-m-d"),
-      ":description" => htmlspecialchars($_POST['description'])
-    ]);
-  } catch (PDOException $th) {
-    exit($th->getMessage());
-  }
+
+
+  $result = dbQuery($connection, $sql, [
+    ":personID" => $_SESSION['userID'],
+    ":roomID" => $_SESSION['roomID'],
+    ":startTime" => $startTime->format("H:s:i"),
+    ":endTime" => $endTime->format("H:s:i"),
+    ":date" => $date->format("Y-m-d"),
+    ":description" => htmlspecialchars($_POST['description'])
+  ]);
+
+  if(isset($result['error']))
+    exit($result['error']);
 
   return printStatus("green", "Booking Successful");
-
 } 
 ?>
 
@@ -233,7 +234,7 @@ function addBooking() {
       </div>
       <label for="date">Date:</label>
       <div class="date">
-        <input type="date" id="date" name="date" min="<?=date("Y-m-d")?>" value="<?=date("Y-m-d")?>" required/>
+        <input type="date" id="date" name="date" min="<?=date("Y-m-d")?>" required/>
       </div>
       <label for="description">Description:</label>
       <textarea id="description" name="description"></textarea>

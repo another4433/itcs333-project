@@ -1,24 +1,63 @@
 <?php
 require "functions.php";
+require "bahrainTimezone.php";
 session_start();
 if(!isset($_SESSION['userID']))
   exit("Your are not authorized to view this page");
 
+deleteBooking();
+function deleteBooking() {
+  if($_SERVER['REQUEST_METHOD'] != "POST")
+    return;
+
+  $connection = databaseConnect();
+  $sql = "DELETE FROM booking " . 
+        "WHERE BookingID = :bookingID";
+  
+  $result = dbQuery($connection, $sql, [
+    ':bookingID' => $_POST['bookingID']
+  ]);
+  
+  if(isset($result['error']))
+    exit($result['error']);
+
+}
 function printBookings():string {
   $connection = databaseConnect();
   $date = date("Y-m-d");
   $currentTime = date("H:s:i");
-  $sql = "Select Room.RoomID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
+  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
         "From booking, room " .
         "Where booking.RoomID = room.RoomID AND " .
-        "PersonID = :userID";
+        "PersonID = :userID AND " . 
+        "Date > :currentDate";
   
-  $SQLResult = dbQuery($connection, $sql, [
+  $afterTodayBookings = dbQuery($connection, $sql, [
     ':userID' => $_SESSION['userID'],
+    ":currentDate" => $date
   ]);
+
+  if(isset($afterTodayBookings['error']))
+    exit($afterTodayBookings['error']);
+
+  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
+        "From booking, room " .
+        "Where booking.RoomID = room.RoomID AND " .
+        "PersonID = :userID AND " . 
+        "Date = :currentDate AND " . 
+        "StartTime > :currentTime";
+
+  $todayBookings = dbQuery($connection, $sql, [
+    ':userID' => $_SESSION['userID'],
+    ':currentDate' => $date,
+    ':currentTime' => $currentTime
+  ]);
+
+  if(isset($todayBookings['error']))
+    exit($todayBookings['error']);
   
-  if(isset($SQLResult['error']))
-    exit($SQLResult['error']);
+
+  $SQLResult = array_merge($afterTodayBookings, $todayBookings);
 
 
   $result = "";
@@ -39,9 +78,8 @@ function printBookings():string {
                     "<p class='location'>{$booking['Location']}</p>". 
                   "</div>". 
                 "</div>". 
-                "<form action='newMyBookings.php' method='POST'>". 
-                  "<input type='hidden' name='roomID' value='<?={$booking['RoomID']}?>'>". 
-                  "<input type='hidden' name='personID' value='<?={$_SESSION['userID']}?>'>". 
+                "<form action='myBookings.php' method='POST'>". 
+                  "<input type='hidden' name='bookingID' value='{$booking['BookingID']}'>". 
                   "<button type='submit'>Delete</button>". 
                 "</form>". 
               "</div>";
@@ -57,27 +95,20 @@ function printBookings():string {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="myBookings.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="myBookings.css">
 </head>
 <body>
-
-
   <nav>
-      <h2>My Bookings</h2>
-      <div>
-          <a href="browsing.php">browse rooms</a>
-          <a href="profile.php">my profile</a>
-      </div>
+    <h2>My Bookings</h2>
+    <div>
+      <a href="browsing.php">browse rooms</a>
+      <a href="profile.php">my profile</a>
+    </div>
   </nav>
-
   <div class="container">
     <div class="ALLroom">
-      <div class="msg">
-        <h3><?php if(isset($msg)) echo $msg; ?></h3>
-        <h3><?php if(isset($msg2)) echo $msg2; ?></h3>
-      </div>
       <?=printBookings()?>
     </div>
   </div>
