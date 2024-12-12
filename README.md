@@ -3,7 +3,7 @@ Ali Mohammed (202105103) (another4433) (responsible for system_adminstrator.php 
 
 Ali Othman Abbas (202208581) (undergradAlgoExpert) (responsible for booking.php + myBooking.php + all accompanying styles)
 
-Saud Saleh (202207164) (saud-alkhazriji04) (responsible for Login_Register file content)
+Saud Salah (202207164) (saud-alkhazriji04) (responsible for Login_Register file content)
 
 Isa Mohamed (202209417) (isa-mohd) (responsible for browsing.php + all accompanying styles)
 
