@@ -26,7 +26,7 @@ function printBookings():string {
   $connection = databaseConnect();
   $date = date("Y-m-d");
   $currentTime = date("H:s:i");
-  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
+  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, Description , ImageName ". 
         "From booking, room " .
         "Where booking.RoomID = room.RoomID AND " .
         "PersonID = :userID AND " . 
@@ -40,7 +40,7 @@ function printBookings():string {
   if(isset($afterTodayBookings['error']))
     exit($afterTodayBookings['error']);
 
-  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, ImageName ". 
+  $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, Description, ImageName ". 
         "From booking, room " .
         "Where booking.RoomID = room.RoomID AND " .
         "PersonID = :userID AND " . 
@@ -68,16 +68,14 @@ function printBookings():string {
                   "<img src='Images\\$booking[ImageName]'>". 
                 "</div>". 
                 "<h3>{$booking['RoomName']}</h3>". 
-                "<div class='room-info'>". 
                   "<p>{$booking['Date']}</p>". 
-                  "<div class='timeLine'>". 
+                  "<div class='duration'>" .
                     "<p class='startTime'>{$booking['StartTime']}</p>". 
+                    "<p>-</p>" .
                     "<p class='endTime'>{$booking['EndTime']}</p>". 
-                  "</div>". 
-                  "<div class='roomInfo'>". 
-                    "<p class='location'>{$booking['Location']}</p>". 
-                  "</div>". 
-                "</div>". 
+                  "</div>" .
+                  "<p class='location'>{$booking['Location']}</p>". 
+                  "<p class='description'>{$booking['Description']}</p>" .
                 "<form action='myBookings.php' method='POST'>". 
                   "<input type='hidden' name='bookingID' value='{$booking['BookingID']}'>". 
                   "<button type='submit'>Delete</button>". 
