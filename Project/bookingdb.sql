@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 08, 2024 at 09:08 AM
+-- Generation Time: Dec 12, 2024 at 06:32 PM
 -- Server version: 8.3.0
 -- PHP Version: 8.2.18
 
@@ -29,15 +29,24 @@ SET time_zone = "+00:00";
 
 DROP TABLE IF EXISTS `booking`;
 CREATE TABLE IF NOT EXISTS `booking` (
+  `BookingID` int NOT NULL AUTO_INCREMENT,
   `PersonID` int NOT NULL,
   `RoomID` int NOT NULL,
   `StartTime` time NOT NULL,
   `EndTime` time NOT NULL,
   `Date` date NOT NULL,
   `Description` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  PRIMARY KEY (`PersonID`,`RoomID`),
-  KEY `RoomID` (`RoomID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  PRIMARY KEY (`BookingID`),
+  KEY `RoomID` (`RoomID`),
+  KEY `PersonID` (`PersonID`)
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `booking`
+--
+
+INSERT INTO `booking` (`BookingID`, `PersonID`, `RoomID`, `StartTime`, `EndTime`, `Date`, `Description`) VALUES
+(14, 4, 8, '09:00:00', '10:00:00', '2024-12-12', 'Economy Tutorial ');
 
 -- --------------------------------------------------------
 
@@ -52,6 +61,15 @@ CREATE TABLE IF NOT EXISTS `favourite` (
   PRIMARY KEY (`RoomID`,`PersonID`),
   KEY `PersonID` (`PersonID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `favourite`
+--
+
+INSERT INTO `favourite` (`RoomID`, `PersonID`) VALUES
+(7, 4),
+(8, 3),
+(12, 4);
 
 -- --------------------------------------------------------
 
@@ -70,14 +88,18 @@ CREATE TABLE IF NOT EXISTS `person` (
   `ImageName` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`PersonID`),
   UNIQUE KEY `Email` (`Email`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `person`
 --
 
 INSERT INTO `person` (`PersonID`, `FirstName`, `LastName`, `Email`, `Password`, `hasAdmin`, `ImageName`) VALUES
-(1, 'Super', 'Admin', '999999999@stu.uob.edu.bh', '$2y$10$sCgyzqfmnHtrbSCwUFt9SeVSnATgOD7dK5aLwq2kjhf/ZXv1Np9nC', 1, NULL);
+(1, 'Super', 'Admin', '999999999@stu.uob.edu.bh', '$2y$10$sCgyzqfmnHtrbSCwUFt9SeVSnATgOD7dK5aLwq2kjhf/ZXv1Np9nC', 1, NULL),
+(2, 'Ali', 'Othman', '202209999@stu.uob.edu.bh', '$2y$10$S5qb7NhO7mFATSTjTlCP6ec7TpDvT1HNKkxR.0zBthjrpGDv/UqKO', 0, NULL),
+(3, 'saud', 'salah', '237283627467@stu.uob.edu.bh', '$2y$10$z6WmWkmuhXZwKNhOlMj/u.p8dKc4UBmWMj0vyuNzxf1GqZTliOW82', 0, NULL),
+(4, 'Ali', 'Othman', '202229999@stu.uob.edu.bh', '$2y$10$uMdnWk0JOoIgxu3OeQhfa.O.ayGSnMuSHPnTNESRdgWMWfKR.ubQ2', 0, 'Images/default.png'),
+(5, 'Abbas', 'Hassan', '202239999@stu.uob.edu.bh', '$2y$10$8cfbqBulGpu/NobwTrETyukQ5n7s170M18No8sB5rl9wkcy.cj6ui', 0, NULL);
 
 -- --------------------------------------------------------
 
