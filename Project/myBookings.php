@@ -7,18 +7,32 @@ if(!isset($_SESSION['userID']))
 
 deleteBooking();
 function checkIfNoBookings():string {
+  $date = date("Y-m-d");
+  $time = date("H:i:s");
   $connection = databaseConnect();
-  $sql = "SELECT COUNT(bookingID) AS count FROM Booking WHERE PersonID = :userID";
-  $result = dbQuery($connection, $sql, [
-    ':userID' => $_SESSION['userID']
+  $sql = "SELECT COUNT(bookingID) AS count FROM Booking WHERE PersonID = :userID AND Date > :date";
+  $result1 = dbQuery($connection, $sql, [
+    ':userID' => $_SESSION['userID'],
+    ':date' => $date
   ]);
   
-  if(isset($result['error'])) {
-    exit($result['error']);
+  if(isset($result1['error'])) {
+    exit($result1['error']);
   }
 
-  
-  if($result[0]['count'] > 0)
+
+  $sql = "SELECT COUNT(bookingID) AS count FROM booking WHERE PersonID = :userID AND Date = :date AND StartTime > :time";
+
+  $result2 = dbQuery($connection, $sql, [
+    ':userID' => $_SESSION['userID'],
+    ':date' => $date,
+    ':time' => $time
+  ]);
+
+  if(isset($result2['error']))
+    exit($result2['error']);
+
+  if($result1[0]['count'] > 0 && $result2[0]['count'] > 0)
     return "";
 
   return "<h3 class='error'>There is no booking</h3>";
