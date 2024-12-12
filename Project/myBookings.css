@@ -20,6 +20,14 @@
   text-align: center;
 }
 
+.error {
+  font-size: 1.17em;
+  text-align: center;
+  color: #D0E1F9;
+  width: 100%;
+  grid-column: span 4;
+}
+
 body {
   background-color: #1E1F26;
   display: flex;

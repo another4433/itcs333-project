@@ -6,6 +6,24 @@ if(!isset($_SESSION['userID']))
   exit("Your are not authorized to view this page");
 
 deleteBooking();
+function checkIfNoBookings():string {
+  $connection = databaseConnect();
+  $sql = "SELECT COUNT(bookingID) AS count FROM Booking WHERE PersonID = :userID";
+  $result = dbQuery($connection, $sql, [
+    ':userID' => $_SESSION['userID']
+  ]);
+  
+  if(isset($result['error'])) {
+    exit($result['error']);
+  }
+
+  
+  if($result[0]['count'] > 0)
+    return "";
+
+  return "<h3 class='error'>There is no booking</h3>";
+
+}
 function deleteBooking() {
   if($_SERVER['REQUEST_METHOD'] != "POST")
     return;
@@ -13,19 +31,22 @@ function deleteBooking() {
   $connection = databaseConnect();
   $sql = "DELETE FROM booking " . 
         "WHERE BookingID = :bookingID";
+
   
   $result = dbQuery($connection, $sql, [
     ':bookingID' => $_POST['bookingID']
   ]);
-  
+
   if(isset($result['error']))
     exit($result['error']);
+
+      
 
 }
 function printBookings():string {
   $connection = databaseConnect();
   $date = date("Y-m-d");
-  $currentTime = date("H:s:i");
+  $currentTime = date("H:i:s");
   $sql = "Select BookingID, Date, StartTime, EndTime, RoomName, Location, Description , ImageName ". 
         "From booking, room " .
         "Where booking.RoomID = room.RoomID AND " .
@@ -107,6 +128,7 @@ function printBookings():string {
   </nav>
   <div class="container">
     <div class="ALLroom">
+      <?=checkIfNoBookings()?>
       <?=printBookings()?>
     </div>
   </div>

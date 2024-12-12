@@ -6,6 +6,17 @@ session_start();
 if(!isset($_SESSION['userID']) || !isset($_SESSION['roomID']))
   exit("You are not authorized to view this page");
 
+$connection = databaseConnect();
+$sql = "Select RoomName From room where roomID = :roomID";
+$result = dbQuery($connection, $sql, [
+  ':roomID' => $_SESSION['roomID']
+]);
+
+if(isset($result['error']))
+  exit($result['error']);
+
+$roomName = $result[0]['RoomName'];
+
 
 $personID = $_SESSION['userID'];
 
@@ -55,11 +66,6 @@ function printTimeline() {
           "WHERE booking.Date = :date AND " . 
           "booking.RoomID = :roomID ";
 
-  $currentDate = date("Y-m-d");
-  $currentTime = date("H:s:i");
-
-  if($_POST['date'] == $currentDate)
-    $sql = $sql . "AND StartTime > '$currentTime'";
 
 
   $result = dbQuery($connection, $sql, [
@@ -140,6 +146,7 @@ function addBooking() {
   if($_POST['requestType'] !== "addBooking")
     return "";
 
+  
 
   $date = DateTime::createFromFormat("Y-m-d", $_POST['date']);
   $startTime = DateTime::createFromFormat("H:i:s", $_POST['startTime'] . ":00");
@@ -172,13 +179,13 @@ function addBooking() {
   }
   if(
     $date == DateTime::createFromFormat("Y-m-d", date("Y-m-d")) && 
-    $startTime <= DateTime::createFromFormat("H:s:i" ,date("H:s:i"))
+    $startTime <= DateTime::createFromFormat("H:i:s" ,date("H:i:s"))
   ) {
     $message = "Invalid booking, the date and time of your booking should be less than the current date and time";
     return printStatus("red" , $message);
   }
 
-  $status = conflictCheck($date, $startTime, $endTime);
+  $status = conflictCheck($date, $_SESSION['roomID'], $startTime, $endTime);
   if($status !== "good") {
     return printStatus("red", $status);
   }
@@ -193,8 +200,8 @@ function addBooking() {
   $result = dbQuery($connection, $sql, [
     ":personID" => $_SESSION['userID'],
     ":roomID" => $_SESSION['roomID'],
-    ":startTime" => $startTime->format("H:s:i"),
-    ":endTime" => $endTime->format("H:s:i"),
+    ":startTime" => $startTime->format("H:i:s"),
+    ":endTime" => $endTime->format("H:i:s"),
     ":date" => $date->format("Y-m-d"),
     ":description" => htmlspecialchars($_POST['description'])
   ]);
@@ -222,6 +229,7 @@ function addBooking() {
     <?=addBooking()?>
   </header>
   <main>
+    <h2><?=$roomName?></h2>
     <form class="bookingForm" action=booking.php method="POST">
       <label>Duration: </label>
       <div class="duration">
