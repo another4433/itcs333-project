@@ -32,10 +32,10 @@ function checkIfNoBookings():string {
   if(isset($result2['error']))
     exit($result2['error']);
 
-  if($result1[0]['count'] > 0 && $result2[0]['count'] > 0)
-    return "";
+  if($result1[0]['count'] === 0 && $result2[0]['count'] === 0)
+    return "<h3 class='error'>There is no booking</h3>";
 
-  return "<h3 class='error'>There is no booking</h3>";
+  return "";
 
 }
 function deleteBooking() {
