@@ -44,6 +44,23 @@ function conflictCheck(DateTime $date, string $roomID, DateTime $startTime,DateT
   return "good";
 }
 
+function sortTime(array $dateTimeArr) {
+  if(count($dateTimeArr) === 0)
+    return;
+
+  for ($i=0; $i < count($dateTimeArr) - 1; $i++) { 
+    for ($j=$i + 1; $j < count($dateTimeArr); $j++) { 
+      if($dateTimeArr[$j]['EndTime'] <= $dateTimeArr[$i]['StartTime']) {
+        $temp = $dateTimeArr[$i];
+        $dateTimeArr[$i] = $dateTimeArr[$j];
+        $dateTimeArr[$j] = $temp;
+      }
+    }
+  }
+
+  return $dateTimeArr;
+}
+
 //function containsFri(DateTime $firstDate, DateTime $secondDate):bool {
 //  $temp = new DateTime($firstDate->format("Y-m-d"));
 //  while($temp <= $secondDate) {

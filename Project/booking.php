@@ -77,6 +77,7 @@ function printTimeline() {
     exit($result['error']);
 
   $bookings = $result;
+  $bookings = sortTime($bookings);
   return helperTimeline($bookings);
 }
 
@@ -115,7 +116,6 @@ function helperTimeline($bookings) {
         $firstHalf = "booked";
       elseif($time->format("i") === "30")
         $secondHalf = "booked";
-
     }
     if($i < count($bookings) && $time >= DateTime::createFromFormat("H:i:s" , $bookings[$i]['EndTime']))
       $i++;
