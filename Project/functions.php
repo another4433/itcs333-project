@@ -46,7 +46,7 @@ function conflictCheck(DateTime $date, string $roomID, DateTime $startTime,DateT
 
 function sortTime(array $dateTimeArr) {
   if(count($dateTimeArr) === 0)
-    return;
+    return [];
 
   for ($i=0; $i < count($dateTimeArr) - 1; $i++) { 
     for ($j=$i + 1; $j < count($dateTimeArr); $j++) { 
